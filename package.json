@@ -1,6 +1,6 @@
 {
   "name": "dsh-deep-research",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Deep research for DeepSeek Harness: multi-query search, source fetching, evidence extraction and a cited evidence report, through the host ctx.web service. · DSH 深度研究插件：多查询检索、正文取证、交叉印证，产出可引用的证据报告。",
   "icon": "./icon.svg",
