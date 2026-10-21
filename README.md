@@ -47,18 +47,30 @@
 
 ## 安装
 
-开发目录即包目录（`dsh-deep-research/`）。安装进当前 profile：
+**插件市场（桌面版）**：设置 → 插件 → **插件市场** → 搜 `dsh-deep-research` → 安装。
 
-```text
-plugin_manager install_bundle target=<本目录绝对路径>
+**命令行（`dsh web` 等非 Electron profile）**：
+
+```bash
+dsh plugin --profile web add dsh-deep-research
 ```
 
-安装会做两件事：把本包 link 进 `$DSH_PROFILE_DIR/node_modules`，并把 `cordis.patch.yml`
-插入 profile 配置层（行 id `deep-research`）。安装后无需重启即可激活；**之后修改本包源码，
-需要重启 Harness 才会加载新的模块代际**（已安装包替换的既有约束）。
+**从 GitHub 安装**：
+
+```bash
+dsh plugin --profile web add github:houdinicc/dsh-deep-research
+```
+
+**本地开发安装**：让 Agent 调 `plugin_manager` 的 `install_bundle`，`target` 指向本目录。
+
+安装后**重启一次 Harness**（宿主路由与客户端 bundle 属于新的模块代际），左侧栏出现
+**DeepResearch** 入口，Agent 工具 `deep_research` 同时可用。
 
 卸载 / 关闭：`plugin_manager remove_bundle target=dsh-deep-research`，或把 patch 行的
 `config.enableTools` 设为 `false`。
+
+> ⚠️ 桌面版 profile（`desktop`）由 Electron 应用独占管理，`dsh plugin` CLI 会拒绝操作它，
+> 桌面用户请走插件市场或 `plugin_manager`。
 
 ## 配置
 
