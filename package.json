@@ -1,0 +1,65 @@
+{
+  "name": "dsh-deep-research",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Deep research for DeepSeek Harness: multi-query search, source fetching, evidence extraction and a cited evidence report, through the host ctx.web service. · DSH 深度研究插件：多查询检索、正文取证、交叉印证，产出可引用的证据报告。",
+  "icon": "./icon.svg",
+  "license": "MIT",
+  "author": "houdinicc",
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "deep-research",
+    "research",
+    "search",
+    "evidence"
+  ],
+  "engines": {
+    "node": ">=20.11",
+    "dsh": ">=0.2.0-rc.1 <0.3.0"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./client": "./lib/client.js"
+  },
+  "files": [
+    "lib",
+    "locale",
+    "cordis.patch.yml",
+    "icon.svg",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "demo": "node scripts/demo.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "verify:pack": "node scripts/verify-pack.mjs",
+    "prepack": "node scripts/preflight.mjs"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/houdinicc/dsh-deep-research.git"
+  },
+  "homepage": "https://github.com/houdinicc/dsh-deep-research#readme",
+  "bugs": {
+    "url": "https://github.com/houdinicc/dsh-deep-research/issues"
+  }
+}

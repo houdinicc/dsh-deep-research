@@ -1,0 +1,21 @@
+# dsh-deep-research —— 本 bundle 贡献的配置层。
+#
+# 只插入插件自己的一行。`config` 是**整体替换**而非深合并：
+# 在 profile 的 cordis.patch.yml 里覆盖时，要把想保留的字段一并写全。
+- insert:
+    - id: deep-research
+      name: 'dsh-deep-research'
+      config:
+        # 是否注册 deep_research 工具。
+        enableTools: true
+        # 未显式传 depth 时使用的研究档位：quick（1 轮）/ standard（2 轮）/ deep（更大预算）。
+        defaultDepth: standard
+        # 以下四个上限同时作用于一次工具调用（模型传入更小的值时取更小值）。
+        maxQueries: 5
+        maxSources: 12
+        fetchTop: 4
+        fetchCharBudget: 60000
+        # 单次 search / fetch 的超时与整次工具调用的超时（毫秒）。
+        searchTimeoutMs: 20000
+        fetchTimeoutMs: 30000
+        toolTimeoutMs: 120000
