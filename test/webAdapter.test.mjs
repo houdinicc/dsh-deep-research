@@ -204,9 +204,16 @@ test('mapResponse：citations 关联 snippet；page_age 映射 publishedAt', () 
 // --------------------------------------------------------------- webAdapter
 
 test('适配器：宿主正常 → 直接用宿主结果，不触发兜底', async () => {
+  const seen = [];
   const host = {
-    search: async () => ({ sources: [{ url: 'https://host/1' }], truncated: false }),
-    fetch: async (request) => ({ url: request.url, statusCode: 200 }),
+    search: async (request, signal) => {
+      seen.push({ kind: 'search', request });
+      return { sources: [{ url: 'https://host/1' }], truncated: false };
+    },
+    fetch: async (request) => {
+      seen.push({ kind: 'fetch', request });
+      return { url: request.url, statusCode: 200 };
+    },
   };
   const adapter = createWebAdapter({
     getWeb: () => host,
@@ -214,10 +221,28 @@ test('适配器：宿主正常 → 直接用宿主结果，不触发兜底', asy
     config: {},
     logger: () => {},
   });
-  const result = await adapter.search('q', 5);
+  // 宿主契约（tools.js 侧）：对象首参。
+  const result = await adapter.search({ query: '向量数据库', maxResults: 5 }, undefined);
   assert.deepEqual(result.sources.map((source) => source.url), ['https://host/1']);
-  const fetched = await adapter.fetch('https://host/1');
+  // 位置参数约定（插件内部/测试）。
+  const result2 = await adapter.search('q', 5);
+  assert.ok(result2.sources.length >= 1);
+  const fetched = await adapter.fetch({ url: 'https://host/1' });
   assert.equal(fetched.statusCode, 200);
+  const fetched2 = await adapter.fetch('https://host/1');
+  assert.equal(fetched2.statusCode, 200);
+  const searchReqs = seen.filter((item) => item.kind === 'search');
+  assert.deepEqual(searchReqs[0].request, { query: '向量数据库', maxResults: 5 });
+  assert.deepEqual(searchReqs[1].request, { query: 'q', maxResults: 5 });
+  const fetchReq = seen.find((item) => item.kind === 'fetch');
+  assert.deepEqual(fetchReq.request, { url: 'https://host/1' });
+});
+
+test('适配器：空 url 的 fetch 请求明确报错（防 [object Object] 回归）', async () => {
+  const host = { search: async () => ({}), fetch: async () => ({}) };
+  const adapter = createWebAdapter({ getWeb: () => host, config: {} });
+  await assert.rejects(() => adapter.fetch({}), /缺少 url/);
+  await assert.rejects(() => adapter.fetch({ url: {} }), /缺少 url/);
 });
 
 test('适配器：宿主失败 → 落账号兜底，成功返回且 warn 日志可观测', async () => {
