@@ -87,8 +87,21 @@ dsh plugin --profile web add github:houdinicc/dsh-deep-research
 | `searchTimeoutMs` | `20000` | 单次 search 超时 |
 | `fetchTimeoutMs` | `30000` | 单次 fetch 超时 |
 | `toolTimeoutMs` | `120000` | 整次工具调用超时（registry 侧协作超时） |
+| `searchFallback` | `true` | 宿主 search 失败时启用账号兜底搜索（见下） |
+| `searchBaseUrl` | `https://api.deepseek.com/anthropic/v1` | 兜底搜索的 DeepSeek 端点 |
+| `searchModel` | `deepseek-chat` | 兜底搜索的模型 |
+| `searchMaxTokens` | `2048` | 兜底搜索单次 max_tokens（256–8192） |
+| `searchMaxUses` | `5` | 兜底搜索单次 web_search 次数（1–10） |
 
 数值越界会被夹到区间内；模型传入的 `max_sources` / `fetch_top` 只能**调小**，不能突破配置上限。
+
+### 账号兜底搜索（searchFallback）
+
+内置搜索 provider（`web-search-deepseek`）只在「会话模型路由为 deepseek-account」时才使用
+账号 token，否则只认 `DEEPSEEK_API_KEY`——key 一旦失效（401），所有查询都会失败。开启
+`searchFallback`（默认开）后，宿主 search 失败时插件改用**已登录账号**直连 DeepSeek Search
+API（`lib/deepseekSearch.js`），宿主与账号都失败时抛回原始错误；失败信封的 `details` 会带
+每条查询的根因，面板与工具输出直接可见。
 
 depth 预设（`lib/plan.js`，测试固定断言）：
 

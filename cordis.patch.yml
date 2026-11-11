@@ -19,3 +19,13 @@
         searchTimeoutMs: 20000
         fetchTimeoutMs: 30000
         toolTimeoutMs: 120000
+        # 账号兜底搜索：宿主 search 失败（如 DEEPSEEK_API_KEY 失效 401）时，
+        # 用已登录账号 token 直连 DeepSeek Search API。false = 关闭兜底，
+        # 宿主失败原样抛出。
+        searchFallback: true
+        # 兜底搜索的端点/模型/预算（与内置 web-search-deepseek 的语义一致）。
+        searchBaseUrl: 'https://api.deepseek.com/anthropic/v1'
+        searchModel: deepseek-chat
+        searchMaxTokens: 2048
+        searchMaxUses: 5
+

@@ -1424,3 +1424,26 @@ describe('§4.2 输出结构', () => {
     assert.ok(result.stats.fetches <= 1);
   });
 });
+
+test('全部搜索失败 → 信封 details 带每条查询的根因', async () => {
+  const failure = Object.assign(new Error('api key invalid (401)'), {
+    code: 'WEB_PROVIDER_ERROR',
+  });
+  const search = makeSearch({}, () => {
+    throw failure;
+  });
+  const result = await runResearch(
+    { question: '失败细节透出场景' },
+    { search, fetchPage: makeFetch({}) },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'all-searches-failed');
+  assert.ok(Array.isArray(result.details));
+  assert.ok(result.details.length >= 1);
+  assert.equal(result.details[0].code, 'WEB_PROVIDER_ERROR');
+  assert.equal(result.details[0].message, 'api key invalid (401)');
+  assert.equal(typeof result.details[0].query, 'string');
+  // message 带首因，纯看信封即可排障。
+  assert.ok(result.message.includes('WEB_PROVIDER_ERROR'));
+  assert.ok(result.message.includes('api key invalid (401)'));
+});

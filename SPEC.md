@@ -158,12 +158,16 @@ export async function runResearch(input, deps) -> ResearchResult
 
 ```js
 { ok: false, code: 'invalid-input'|'aborted'|'all-searches-failed'|'no-results'|'internal',
-  message: string }
+  message: string,
+  details?: [ { query: string, code?: string, message: string } ],  // 仅 all-searches-failed
+}
 ```
 
 - `aborted` 仅当传入 signal 已取消；此时直接抛 `AbortError` 也可接受，**但工具层必须捕获**。
 - 所有搜索都失败 → `all-searches-failed`；都成功但 0 来源 → `no-results`（仍返回可读 message，
   带上首条查询）。
+- `all-searches-failed` 的 `message` 追加首因（第一条失败查询的 code + message），`details`
+  最多带 3 条 per-query 根因——UI 与工具渲染层都会展示，排障不必翻宿主日志。
 
 ### 4.3 depth 预设（固定值，测试要断言）
 
